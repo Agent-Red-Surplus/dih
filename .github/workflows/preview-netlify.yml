@@ -12,22 +12,36 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
+        env:
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
         run: |
           npm install --no-audit --no-fund
           npm run build
 
       - name: Build admin
         working-directory: ./admin
+        env:
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
+          ADMIN_BASE: '/admin/'
         run: |
           npm install --no-audit --no-fund
           npm run build
 
-      - name: Deploy to Netlify
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy frontend to Netlify
         if: secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != ''
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: frontend/dist
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          netlify deploy --dir=frontend/dist --prod --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+      - name: Deploy admin to Netlify
+        if: secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_ADMIN_SITE_ID != ''
+        run: |
+          netlify deploy --dir=admin/dist --prod --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_ADMIN_SITE_ID
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_ADMIN_SITE_ID: ${{ secrets.NETLIFY_ADMIN_SITE_ID }}

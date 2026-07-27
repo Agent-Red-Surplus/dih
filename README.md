@@ -67,10 +67,18 @@ node scripts/balance.js
 
 Deploy
 - GitHub Pages: workflow at `.github/workflows/pages-deploy.yml` builds both `frontend/dist` and `admin/dist` and deploys using Pages artifacts. No extra secrets are required for GitHub Pages deploys.
+  - Set `VITE_API_BASE` in GitHub repository secrets if your backend is deployed to a different host.
 - Netlify: optional preview workflow at `.github/workflows/preview-netlify.yml` requires these repository secrets:
   - `NETLIFY_AUTH_TOKEN` — your Netlify API token.
-  - `NETLIFY_SITE_ID` — the Netlify site ID for the site you want to deploy.
+  - `NETLIFY_SITE_ID` — the Netlify site ID for the frontend site.
+  - `NETLIFY_ADMIN_SITE_ID` — optional site ID for the admin dashboard.
+  - `VITE_API_BASE` — the backend URL for the deployed app.
 - Vercel: optional preview workflow at `.github/workflows/preview-vercel.yml` requires these repository secrets:
   - `VERCEL_TOKEN` — your Vercel personal access token.
   - `VERCEL_ORG_ID` — your Vercel organization ID.
+  - `VERCEL_PROJECT_ID` — your Vercel project ID for the frontend.
+  - `VERCEL_ADMIN_PROJECT_ID` — optional project ID for the admin dashboard.
+  - `VITE_API_BASE` — the backend URL for the deployed app.
+
+Security note: never paste private secrets into chat, issue descriptions, or source files. Add deployment tokens and private API URLs only through GitHub repository secrets under Settings > Secrets and variables.
   - `VERCEL_PROJECT_ID` — your Vercel project ID.

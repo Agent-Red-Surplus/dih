@@ -83,7 +83,7 @@ export default function App() {
       renderer.dispose()
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
     }
-  }, [clickPower])
+  }, [])
 
   const [tuning, setTuning] = useState({
     auto_base_cost: 50,

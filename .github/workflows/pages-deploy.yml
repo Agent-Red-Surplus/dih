@@ -23,22 +23,32 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
+        env:
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
         run: |
           npm install --no-audit --no-fund
           npm run build
 
       - name: Build admin
         working-directory: ./admin
+        env:
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
+          ADMIN_BASE: '/admin/'
         run: |
           npm install --no-audit --no-fund
           npm run build
 
+      - name: Collect Pages artifact
+        run: |
+          rm -rf out || true
+          mkdir -p out/admin
+          cp -r frontend/dist/* out/
+          cp -r admin/dist/* out/admin/
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: |
-            frontend/dist
-            admin/dist
+          path: out
 
   deploy:
     needs: build

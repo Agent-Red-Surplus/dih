@@ -372,6 +372,21 @@ export default function App() {
           <button style={buttonStyle} onClick={() => saveToLocal(game)}>Save</button>
           <button style={buttonStyle} onClick={() => setAdminOpen(!adminOpen)}>Admin</button>
         </div>
+        <div style={{ marginTop: 12, padding: 10, background: 'rgba(255,255,255,0.03)', borderRadius: 10 }}>
+          <h3 style={{ margin: '0 0 8px' }}>Spend Prestige Resources</h3>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ flex: 1 }}>Evolution Shards: {game.prestigeResources.evolutionShards}</div>
+            <button style={buttonStyle} onClick={() => { if (game.spendEvolutionShard()) setTick(t => t + 1) }}>Spend Shard (+10% production)</button>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ flex: 1 }}>Colony Commission: {game.prestigeResources.colonyCommission}</div>
+            <button style={buttonStyle} onClick={() => { if (game.spendColonyCommission()) setTick(t => t + 1) }}>Commission Colony (adds colony)</button>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ flex: 1 }}>Void Crystals: {game.prestigeResources.voidCrystals}</div>
+            <button style={buttonStyle} onClick={() => { if (game.spendVoidCrystalForMeta()) setTick(t => t + 1) }}>Convert Crystal → Meta Point</button>
+          </div>
+        </div>
         {adminOpen && (
           <div style={{ marginTop: 14, padding: 14, background: 'rgba(255,255,255,0.08)', borderRadius: 14 }}>
             <h3>Admin Access</h3>

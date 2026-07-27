@@ -79,6 +79,8 @@ class GameState {
     }
     const world = this.currentWorld()
     prod *= world.multiplier
+    // apply evolution bonus
+    prod *= this.getEvolutionBonus()
     const resourceFlow = this.skills.find(s => s.id === 'resource_flow')
     prod *= 1 + resourceFlow.level * resourceFlow.effect.productionMult
     if (this.artifacts.some(a => a.owned && a.effect && a.effect.resourceMult)) {
@@ -195,8 +197,37 @@ class GameState {
       skills: this.skills,
       worldIndex: this.worldIndex,
       metaPoints: this.metaPoints,
+      evolutionBonus: this.evolutionBonus,
       artifacts: this.artifacts,
       quests: this.quests,
+      stats: this.stats,
+    }
+  }
+
+  static fromJSON(obj) {
+    const state = new GameState()
+    Object.assign(state, {
+      resources: obj.resources || 0,
+      clickPower: obj.clickPower || 1,
+      clickRate: obj.clickRate || 1,
+      autoClickers: obj.autoClickers || 0,
+      colonies: obj.colonies || state.colonies,
+      research: obj.research || state.research,
+      prestigeResources: obj.prestigeResources || state.prestigeResources,
+      producers: obj.producers || state.producers,
+      skills: obj.skills || state.skills,
+      worldIndex: obj.worldIndex || 0,
+      metaPoints: obj.metaPoints || 0,
+      evolutionBonus: obj.evolutionBonus || state.evolutionBonus,
+      artifacts: obj.artifacts || state.artifacts,
+      quests: obj.quests || state.quests,
+      stats: obj.stats || state.stats,
+    })
+    return state
+  }
+}
+
+export default GameState
       stats: this.stats,
     }
   }

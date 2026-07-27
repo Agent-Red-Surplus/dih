@@ -1,4 +1,4 @@
-const wasmPath = import.meta.env.VITE_MISSION_WASM_PATH || '/unity/mission.wasm'
+const wasmPath = import.meta.env.VITE_MISSION_WASM_PATH || 'unity/mission.wasm'
 let wasmModule = null
 let wasmExports = null
 

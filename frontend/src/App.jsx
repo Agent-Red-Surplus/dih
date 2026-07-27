@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import GameState from './game/state'
 import Leaderboard from './Leaderboard'
 
-const API_BASE = window.__API_BASE__ || 'http://localhost:8000'
+const API_BASE = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
 
 export default function App() {
   const mountRef = useRef(null)

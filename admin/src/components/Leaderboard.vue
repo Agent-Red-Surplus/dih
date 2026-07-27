@@ -27,7 +27,7 @@ export default {
     async load() {
       this.loading = true
       try {
-        const base = window.__API_BASE__ || 'http://localhost:8000'
+        const base = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
         const res = await fetch(`${base}/leaderboard`)
         const j = await res.json()
         this.board = j.board || []
@@ -39,7 +39,7 @@ export default {
     },
     async submit() {
       try {
-        const base = window.__API_BASE__ || 'http://localhost:8000'
+        const base = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
         const res = await fetch(`${base}/leaderboard`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ player_id: this.playerId, score: this.score }) })
         const j = await res.json()
         if (j.ok) {
@@ -53,7 +53,7 @@ export default {
     ,
     async clearBoard() {
       try {
-        const base = window.__API_BASE__ || 'http://localhost:8000'
+        const base = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
         const res = await fetch(`${base}/admin/leaderboard/clear`, { method: 'POST' })
         const j = await res.json()
         if (j.ok) {

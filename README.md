@@ -38,7 +38,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-The frontend will attempt to save/load to `http://localhost:8000` by default. You can set `window.__API_BASE__` in the page to point to another backend.
+The frontend and admin apps will attempt to save/load to `http://localhost:8000` by default. You can set `window.__API_BASE__` in the page, or better yet define `VITE_API_BASE` during deployment to point to a deployed backend.
 
 A quick guide to build, test, and deploy the project locally and via CI:
 

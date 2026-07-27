@@ -85,7 +85,7 @@ export default {
     async load() {
       this.loading = true
       try {
-        const base = window.__API_BASE__ || 'http://localhost:8000'
+        const base = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
         const res = await fetch(`${base}/admin/tuning`)
         const j = await res.json()
         this.tuning = j.tuning || {}
@@ -99,7 +99,7 @@ export default {
     },
     async save() {
       try {
-        const base = window.__API_BASE__ || 'http://localhost:8000'
+        const base = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
         const res = await fetch(`${base}/admin/tuning`, { method: 'POST', body: JSON.stringify(this.tuning), headers: { 'Content-Type': 'application/json' } })
         const j = await res.json()
         if (j.ok) this.message = 'Saved.'

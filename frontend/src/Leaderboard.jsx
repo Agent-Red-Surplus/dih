@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-const API_BASE = window.__API_BASE__ || 'http://localhost:8000'
+const API_BASE = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
 
 export default function Leaderboard() {
   const [board, setBoard] = useState([])

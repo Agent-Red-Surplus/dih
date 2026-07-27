@@ -10,11 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build sites
+      - name: Build frontend
+        working-directory: ./frontend
         run: |
-          cd frontend && npm install --no-audit --no-fund
+          npm install --no-audit --no-fund
           npm run build
-          cd ../admin && npm install --no-audit --no-fund
+
+      - name: Build admin
+        working-directory: ./admin
+        run: |
+          npm install --no-audit --no-fund
           npm run build
 
       - name: Deploy to Vercel

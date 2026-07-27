@@ -89,6 +89,11 @@ jobs:
     needs: build-and-deploy
     steps:
       - uses: actions/checkout@v4
+      - name: Build frontend for Netlify
+        working-directory: ./frontend
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
       - name: Install Netlify CLI
         run: npm i -g netlify-cli
       - name: Deploy to Netlify
@@ -104,11 +109,16 @@ jobs:
     needs: build-and-deploy
     steps:
       - uses: actions/checkout@v4
+      - name: Build frontend for Vercel
+        working-directory: ./frontend
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
       - name: Install Vercel CLI
         run: npm i -g vercel@28
       - name: Deploy to Vercel
         run: |
-          vercel --prod --token $VERCEL_TOKEN --confirm --cwd frontend
+          vercel --prod --token $VERCEL_TOKEN --confirm --cwd frontend --scope $VERCEL_ORG_ID --project $VERCEL_PROJECT_ID
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

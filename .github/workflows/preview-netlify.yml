@@ -31,7 +31,7 @@ jobs:
         run: npm install -g netlify-cli
 
       - name: Deploy frontend to Netlify
-        if: secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != ''
+        if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != '' }}
         run: |
           netlify deploy --dir=frontend/dist --prod --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
         env:
@@ -39,7 +39,7 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
       - name: Deploy admin to Netlify
-        if: secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_ADMIN_SITE_ID != ''
+        if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_ADMIN_SITE_ID != '' }}
         run: |
           netlify deploy --dir=admin/dist --prod --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_ADMIN_SITE_ID
         env:

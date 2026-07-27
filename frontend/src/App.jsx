@@ -207,13 +207,13 @@ export default function App() {
         </div>
         <div style={{ marginTop: 14 }}>
           <h2 style={{ margin: '16px 0 8px' }}>Infrastructure</h2>
-          {availableProducers.map((producer) => (
+          {availableProducers.map((producer, idx) => (
             <div key={producer.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, padding: 10, background: 'rgba(255,255,255,0.05)', borderRadius: 12 }}>
               <div>
                 <strong>{producer.name}</strong> L{producer.level}
                 <div style={{ fontSize: 12, color: '#a9b5d2' }}>Produces {producer.baseProduction} /s base</div>
               </div>
-              <button style={buttonStyle} onClick={() => buyProducer(game.producers.indexOf(producer))}>Buy {producer.cost}</button>
+              <button style={buttonStyle} onClick={() => buyProducer(idx)}>Buy {producer.cost}</button>
             </div>
           ))}
         </div>

@@ -10,6 +10,7 @@
         <input v-model="playerId" placeholder="player id" />
         <input v-model.number="score" type="number" placeholder="score" style="width:120px;margin-left:8px" />
         <button @click="submit" style="margin-left:8px">Submit</button>
+        <button @click="clearBoard" style="margin-left:8px">Clear (admin)</button>
       </div>
       <div v-if="message" style="margin-top:8px">{{ message }}</div>
     </div>
@@ -47,6 +48,20 @@ export default {
         } else this.message = 'Submit failed.'
       } catch (e) {
         this.message = 'Submit failed.'
+      }
+    }
+    ,
+    async clearBoard() {
+      try {
+        const base = window.__API_BASE__ || 'http://localhost:8000'
+        const res = await fetch(`${base}/admin/leaderboard/clear`, { method: 'POST' })
+        const j = await res.json()
+        if (j.ok) {
+          this.message = 'Cleared.'
+          this.load()
+        } else this.message = 'Clear failed.'
+      } catch (e) {
+        this.message = 'Clear failed.'
       }
     }
   },

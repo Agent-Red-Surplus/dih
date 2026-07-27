@@ -1,5 +1,5 @@
 <template>
-  <div style="padding:20px; max-width:800px">
+  <div style="padding-top:12px; max-width:860px">
     <h2>Game Tuning</h2>
     <div v-if="loading">Loading…</div>
     <div v-else>
@@ -18,7 +18,7 @@
 
       <div style="margin-top:12px">
         <h3>Producers</h3>
-        <div v-for="(p, idx) in tuning.producers" :key="p.id" style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:8px;align-items:center;margin-bottom:6px">
+        <div v-for="(p, idx) in tuning.producers" :key="p.id" style="display:grid;grid-template-columns:1fr 90px 90px 100px;gap:8px;align-items:center;margin-bottom:6px">
           <div>{{ p.name || p.id }}</div>
           <input type="number" v-model.number="p.baseProduction" />
           <input type="number" v-model.number="p.baseCost" />
@@ -28,7 +28,7 @@
 
       <div style="margin-top:12px">
         <h3>Skills</h3>
-        <div v-for="(s, idx) in tuning.skills" :key="s.id" style="display:grid;grid-template-columns:1fr 80px 80px;gap:8px;align-items:center;margin-bottom:6px">
+        <div v-for="(s, idx) in tuning.skills" :key="s.id" style="display:grid;grid-template-columns:1fr 100px 100px;gap:8px;align-items:center;margin-bottom:6px">
           <div>{{ s.name || s.id }}</div>
           <input type="number" v-model.number="s.baseCost" />
           <input type="number" v-model.number="s.maxLevel" />
@@ -45,7 +45,7 @@
 
       <div style="margin-top:12px">
         <h3>Artifacts</h3>
-        <div v-for="(a, idx) in tuning.artifacts" :key="a.id" style="display:grid;grid-template-columns:1fr 80px 80px;gap:8px;align-items:center;margin-bottom:6px">
+        <div v-for="(a, idx) in tuning.artifacts" :key="a.id" style="display:grid;grid-template-columns:1fr 100px 100px;gap:8px;align-items:center;margin-bottom:6px">
           <div>{{ a.name || a.id }}</div>
           <input type="number" v-model.number="a.cost" />
           <input type="number" step="0.01" v-model.number="a.effect.resourceMult" />
@@ -71,40 +71,67 @@
 </template>
 
 <script>
+import { getTuning, saveTuning } from '../api'
+
+const DEFAULT_TUNING = {
+  auto_base_cost: 50,
+  auto_cost_scaling: 25,
+  click_base_cost: 20,
+  click_value: 1,
+  click_multiplier_cost_base: 2,
+  producers: [
+    { id: 'herb', name: 'Herb Patch', baseProduction: 1, baseCost: 10, costScaling: 1.2 },
+    { id: 'nest', name: 'Nest', baseProduction: 5, baseCost: 100, costScaling: 1.25 },
+  ],
+  skills: [
+    { id: 'click_master', name: 'Click Mastery', baseCost: 50, maxLevel: 5, effect: { clickPowerMult: 0.5 } },
+    { id: 'automation', name: 'Automation', baseCost: 75, maxLevel: 5, effect: { autoBonus: 1 } },
+  ],
+  worlds: [
+    { id: 'plains', name: 'Plains', multiplier: 1 },
+    { id: 'jungle', name: 'Jungle', multiplier: 1.1 },
+    { id: 'volcano', name: 'Volcano', multiplier: 1.25 },
+  ],
+  artifacts: [
+    { id: 'amulet', name: 'Amulet of Growth', cost: 500, effect: { resourceMult: 1.1 } },
+  ],
+}
+
 export default {
   name: 'Tuning',
   data() {
     return {
       loading: true,
-      tuning: {},
+      tuning: JSON.parse(JSON.stringify(DEFAULT_TUNING)),
       message: '',
-      raw: ''
+      raw: JSON.stringify(DEFAULT_TUNING, null, 2),
     }
   },
   methods: {
     async load() {
       this.loading = true
+      this.message = ''
       try {
-        const base = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
-        const res = await fetch(`${base}/admin/tuning`)
-        const j = await res.json()
-        this.tuning = j.tuning || {}
+        const tuning = await getTuning()
+        this.tuning = tuning || JSON.parse(JSON.stringify(DEFAULT_TUNING))
         this.raw = JSON.stringify(this.tuning, null, 2)
       } catch (e) {
-        this.message = 'Failed to load tuning.'
-        this.tuning = {}
+        this.tuning = JSON.parse(JSON.stringify(DEFAULT_TUNING))
+        this.raw = JSON.stringify(this.tuning, null, 2)
+        this.message = 'Failed to load tuning. Showing defaults.'
       } finally {
         this.loading = false
       }
     },
     async save() {
       try {
-        const base = import.meta.env.VITE_API_BASE || window.__API_BASE__ || 'http://localhost:8000'
-        const res = await fetch(`${base}/admin/tuning`, { method: 'POST', body: JSON.stringify(this.tuning), headers: { 'Content-Type': 'application/json' } })
-        const j = await res.json()
-        if (j.ok) this.message = 'Saved.'
-        else this.message = 'Save failed.'
-      } catch (e) {
+        const result = await saveTuning(this.tuning)
+        if (result.ok) {
+          this.message = result.fallback ? 'Saved locally.' : 'Saved successfully.'
+        } else {
+          this.message = 'Save failed.'
+        }
+      } catch {
         this.message = 'Save failed.'
       }
     },
@@ -113,39 +140,18 @@ export default {
         const parsed = JSON.parse(this.raw)
         this.tuning = parsed
         await this.save()
-      } catch (e) {
+      } catch {
         this.message = 'Invalid JSON.'
       }
     },
     reset() {
-      // reload will fall back to defaults if not present on server
-      this.tuning = {
-        auto_base_cost: 50,
-        auto_cost_scaling: 25,
-        click_base_cost: 20,
-        click_value: 1,
-        click_multiplier_cost_base: 2,
-        producers: [
-          { id: 'herb', name: 'Herb Patch', baseProduction: 1, baseCost: 10, costScaling: 1.2 },
-          { id: 'nest', name: 'Nest', baseProduction: 5, baseCost: 100, costScaling: 1.25 }
-        ],
-        skills: [
-          { id: 'click_master', name: 'Click Mastery', baseCost: 50, maxLevel: 5, effect: { clickPowerMult: 0.5 } },
-          { id: 'automation', name: 'Automation', baseCost: 75, maxLevel: 5, effect: { autoBonus: 1 } }
-        ],
-        worlds: [
-          { id: 'plains', name: 'Plains', multiplier: 1 },
-          { id: 'jungle', name: 'Jungle', multiplier: 1.1 },
-          { id: 'volcano', name: 'Volcano', multiplier: 1.25 }
-        ],
-        artifacts: [
-          { id: 'amulet', name: 'Amulet of Growth', cost: 500, effect: { resourceMult: 1.1 } }
-        ]
-      }
-    }
+      this.tuning = JSON.parse(JSON.stringify(DEFAULT_TUNING))
+      this.raw = JSON.stringify(this.tuning, null, 2)
+      this.message = 'Reset to defaults.'
+    },
   },
   mounted() {
     this.load()
-  }
+  },
 }
 </script>
